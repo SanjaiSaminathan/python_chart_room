@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Request
 
 
-from fastapi import form
+from fastapi import Form
 
 # create an instance object of the fastAPI class
 
