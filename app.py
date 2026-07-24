@@ -7,6 +7,10 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from fastapi import Request
+
+
+from fastapi import form
+
 # create an instance object of the fastAPI class
 
 app = FastAPI()
@@ -22,3 +26,13 @@ def home(request: Request):
         request=request,
         name="index.html"
     )
+    
+    
+    @app.post("/chat")
+    def join_chat(
+    username: str = Form(...),
+    ):
+        return {
+        "username": username,
+        
+        }
