@@ -11,6 +11,10 @@ from fastapi import Request
 
 from fastapi import Form
 
+# import the websocket library
+
+from fastapi import WebSocket
+
 # create an instance object of the fastAPI class
 
 app = FastAPI()
@@ -28,12 +32,24 @@ def home(request: Request):
     )
     
     
-    @app.post("/chat")
-    def join_chat(
-    username:str = Form(...),
-    room:str = Form(...)
-    ):
-        return {
-        "username": username,
-        "room": room
-        }
+@app.post("/chat")
+def join_chat(
+username:str = Form(...),
+room:str = Form(...)
+):
+    return {
+    "username": username,
+    "room": room
+    }
+        
+# websocket endpoint for chat room
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+
+    while True:
+        message = await websocket.receive_text()
+
+        await websocket.send_text(
+            f"You typed: {message}"
+        )
