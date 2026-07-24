@@ -31,9 +31,9 @@ def home(request: Request):
     @app.post("/chat")
     def join_chat(
     username:str = Form(...),
-    Roomname:str = Form(...)
+    room:str = Form(...)
     ):
         return {
         "username": username,
-        "roomname": Roomname
+        "room": room
         }
