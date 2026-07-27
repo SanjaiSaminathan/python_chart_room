@@ -33,14 +33,20 @@ def home(request: Request):
     
     
 @app.post("/chat")
+@app.post("/chat", response_class=HTMLResponse)
 def join_chat(
-username:str = Form(...),
-room:str = Form(...)
+    request: Request,
+    username: str = Form(...),
+    room: str = Form(...)
 ):
-    return {
-    "username": username,
-    "room": room
-    }
+    return templates.TemplateResponse(
+        request=request,
+        name="chat.html",
+        context={
+            "username": username,
+            "room": room
+        }
+    )
         
 # websocket endpoint for chat room
 @app.websocket("/ws")
