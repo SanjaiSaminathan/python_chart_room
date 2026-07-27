@@ -10,5 +10,46 @@
     <h2>You joined room: {{ room }}</h2>
 
     <p>Your form was submitted successfully.</p>
+
+    <hr>
+
+    <div id ="message"> <div>
+    
+
+    <br>
+
+    <input 
+        id="message_input"
+        type="text"
+        placeholder="Type your message" >
+
+        <button onclick="sendMessage()">
+            Send
+        </button>
+    <script>
+        const socket =new WebSocket("ws://127.0.0.1:8000/ws");
+
+        socket.onopen = function(){
+            console.log("Connected to the server");
+
+        }
+
+        socket.onmessage = function(event){
+
+            const message = document.getElementById("message");
+
+            messages.innerHTML += "<p>"+event.data+"</p>";
+
+        };
+
+        function sendmessage(){
+            const input = document.getElementById("messageinput");
+
+            socket.send(input.value);
+
+
+            input.value = "";
+        }
+    </script>
   </body>
 </html>
