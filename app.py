@@ -6,6 +6,8 @@ from fastapi import Form
 from fastapi import WebSocket
 from fastapi import WebSocketDisconnect
 
+from datetime import datetime
+
 from manager import ConnectionManager
 
 app = FastAPI()
@@ -49,12 +51,19 @@ async def websocket_endpoint(
 
     try:
         while True:
-            message = await websocket.receive_text()
-            
-            print(f"Received from room {room}: {message}")
 
-            await manager.broadcast(message, room)
+            message = await websocket.receive_text()
+
+            print(f"Received from room '{room}': {message}")
+
             
+            timestamp = datetime.now().strftime("%H:%M:%S")
+
+            
+            formatted_message = f"[{timestamp}] {message}"
+
+            await manager.broadcast(formatted_message, room)
+
             print("Broadcast complete")
 
     except WebSocketDisconnect:
