@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from fastapi import Form
 from fastapi import WebSocket
+from fastapi import WebSocketDisconnect
 
 from manager import ConnectionManager
 
@@ -32,23 +33,25 @@ def join_chat(
         request=request,
         name="chat.html",
         context={
+            "request": request,
             "username": username,
             "room": room
         }
     )
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-
-    await manager.connect(websocket)
+@app.websocket("/ws/{room}")
+async def websocket_endpoint(
+    websocket: WebSocket,
+    room: str
+):
+    await manager.connect(websocket, room)
 
     try:
         while True:
-
             message = await websocket.receive_text()
 
-            await manager.broadcast(message)
+            await manager.broadcast(message, room)
 
-    except:
-        manager.disconnect(websocket)
+    except WebSocketDisconnect:
+        manager.disconnect(websocket, room)

@@ -7,34 +7,35 @@
     <h1>welcome to sanjai chat room</h1>
     <!-- set up the user interface connect to html to fastapi -->
 
-    <from action = "/chat" method ="post">
+    <form action="/chat" method="post">
+      <label> UserName </label>
 
-        <label> UserName </label>
-
-        <br>
-        <input 
-        type="text",
-        name="User Name",
+      <br />
+      <input
+        type="text"
+        ,
+        name="Username"
+        ,
         placeholder="Enter user name"
-        required>
+        required
+      />
 
-        <br><br>
+      <br /><br />
 
-        <label> Roomname </label>
+      <label> Roomname </label>
 
-        <br>
-        <input
-        type="text:",
-        name="Room name",
+      <br />
+      <input
+        type="text"
+        ,
+        name="Roomname"
+        ,
         placeholder="Enter room name"
-        required>
-        <br><br>
+        required
+      />
+      <br /><br />
 
-        <button
-            type= " submit room information">
-            join room 
-        </button>
-
-         </form>
+      <button type="submit">join room</button>
+    </form>
   </body>
 </html>

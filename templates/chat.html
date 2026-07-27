@@ -1,4 +1,4 @@
-<!doctype >
+<!doctype html>
 <html>
   <head>
     <title>Chat Room</title>
@@ -9,47 +9,38 @@
 
     <h2>You joined room: {{ room }}</h2>
 
-    <p>Your form was submitted successfully.</p>
+    <hr />
 
-    <hr>
+    <div id="messages"></div>
 
-    <div id ="message"> <div>
-    
+    <br />
 
-    <br>
+    <input id="messageInput" type="text" placeholder="Type your message" />
 
-    <input 
-        id="message_input"
-        type="text"
-        placeholder="Type your message" >
+    <button onclick="sendMessage()">Send</button>
 
-        <button onclick="sendMessage()">
-            Send
-        </button>
     <script>
-        const socket =new WebSocket("ws://127.0.0.1:8000/ws");
+      const room = "{{ room }}";
 
-        socket.onopen = function(){
-            console.log("Connected to the server");
+      const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${room}`);
 
-        }
+      socket.onopen = function () {
+        console.log("Connected to the server");
+      };
 
-        socket.onmessage = function(event){
+      socket.onmessage = function (event) {
+        const messages = document.getElementById("messages");
 
-            const message = document.getElementById("message");
+        messages.innerHTML += "<p>" + event.data + "</p>";
+      };
 
-            messages.innerHTML += "<p>"+event.data+"</p>";
+      function sendMessage() {
+        const input = document.getElementById("messageInput");
 
-        };
+        socket.send(input.value);
 
-        function sendmessage(){
-            const input = document.getElementById("messageinput");
-
-            socket.send(input.value);
-
-
-            input.value = "";
-        }
+        input.value = "";
+      }
     </script>
   </body>
 </html>
