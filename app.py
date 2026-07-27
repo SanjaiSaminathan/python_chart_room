@@ -50,8 +50,12 @@ async def websocket_endpoint(
     try:
         while True:
             message = await websocket.receive_text()
+            
+            print(f"Received from room {room}: {message}")
 
             await manager.broadcast(message, room)
+            
+            print("Broadcast complete")
 
     except WebSocketDisconnect:
         manager.disconnect(websocket, room)
