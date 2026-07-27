@@ -7,6 +7,7 @@ from fastapi import WebSocket
 from fastapi import WebSocketDisconnect
 
 from datetime import datetime
+import json
 
 from manager import ConnectionManager
 
@@ -42,27 +43,37 @@ def join_chat(
     )
 
 
-@app.websocket("/ws/{room}")
+@app.websocket("/ws/{room}/{username}")
 async def websocket_endpoint(
     websocket: WebSocket,
-    room: str
+    room: str,
+    username: str
 ):
     await manager.connect(websocket, room)
 
     try:
         while True:
 
+            # Receive the message
             message = await websocket.receive_text()
 
-            print(f"Received from room '{room}': {message}")
+            print(f"Received from '{username}' in room '{room}': {message}")
 
-            
+            # Create timestamp
             timestamp = datetime.now().strftime("%H:%M:%S")
 
-            
-            formatted_message = f"[{timestamp}] {message}"
+            # Create JSON message
+            message_data = {
+                "username": username,
+                "message": message,
+                "timestamp": timestamp
+            }
 
-            await manager.broadcast(formatted_message, room)
+            # Broadcast JSON to everyone in the room
+            await manager.broadcast(
+                json.dumps(message_data),
+                room
+            )
 
             print("Broadcast complete")
 

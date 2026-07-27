@@ -2,6 +2,33 @@
 <html>
   <head>
     <title>Chat Room</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      #messages {
+        border: 1px solid #ccc;
+        padding: 10px;
+        height: 350px;
+        overflow-y: auto;
+        margin-bottom: 15px;
+      }
+
+      .message {
+        margin-bottom: 10px;
+      }
+
+      .username {
+        font-weight: bold;
+      }
+
+      .time {
+        color: gray;
+        font-size: 12px;
+      }
+    </style>
   </head>
 
   <body>
@@ -9,33 +36,90 @@
 
     <h2>You joined room: {{ room }}</h2>
 
-    <hr />
+    <hr>
 
     <div id="messages"></div>
 
-    <br />
-
-    <input id="messageInput" type="text" placeholder="Type your message" />
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Type your message"
+    >
 
     <button onclick="sendMessage()">Send</button>
 
     <script>
+      const username = "{{ username }}";
       const room = "{{ room }}";
 
-      const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${room}`);
+      const socket = new WebSocket(
+        `ws://127.0.0.1:8000/ws/${room}/${username}`
+      );
+
+      // Store a colour for each user
+      const userColors = {};
+
+      function getRandomColor() {
+
+        const colors = [
+          "#e74c3c",
+          "#3498db",
+          "#2ecc71",
+          "#9b59b6",
+          "#f39c12",
+          "#1abc9c",
+          "#d35400",
+          "#34495e"
+        ];
+
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
 
       socket.onopen = function () {
-        console.log("Connected to the server");
+        console.log("Connected");
       };
 
       socket.onmessage = function (event) {
+
+        const data = JSON.parse(event.data);
+
+        if (!userColors[data.username]) {
+          userColors[data.username] = getRandomColor();
+        }
+
+        const color = userColors[data.username];
+
         const messages = document.getElementById("messages");
 
-        messages.innerHTML += "<p>" + event.data + "</p>";
+        messages.innerHTML += `
+          <div class="message">
+            <span
+              class="username"
+              style="color:${color};"
+            >
+              ${data.username}
+            </span>
+
+            <span class="time">
+              [${data.timestamp}]
+            </span>
+
+            <br>
+
+            ${data.message}
+          </div>
+        `;
+
+        messages.scrollTop = messages.scrollHeight;
       };
 
       function sendMessage() {
+
         const input = document.getElementById("messageInput");
+
+        if (input.value.trim() === "") {
+          return;
+        }
 
         socket.send(input.value);
 
